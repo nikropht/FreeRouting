@@ -11,6 +11,29 @@ Because I am no more maintaining the Freerouting project since 4 years and futur
 
 I have attached the complete source code of the Freerouting project. Please feel free downloading and using the sources according to the GPLv3 license.
 
+Building with javac
+===================
+
+On debian:
+
+    apt-get install javahelp2 icedtea-netx-common
+    
+    ( javac  -classpath \
+      /usr/share/java/jh.jar:/usr/share/icedtea-web/netx.jar  \
+      `find -type f -name "*.java"` && \
+      jar cfe ../fr.jar gui.MainApplication \
+      `find -type f \( -name "*.class" -o -name "*.properties" \)` )
+
+
+From here:
+
+https://s3.amazonaws.com/miscjunkandstuff/FreeRouting/build-instructions.txt
+
+Running from commandline
+========================
+
+    java -jar fr.jar -de $PATH_TO_YOUR_PROJECT/yourDsnFile.dsn
+
 
 Introduction:
 =============

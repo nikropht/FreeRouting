@@ -380,7 +380,8 @@ public class BoardFrame extends javax.swing.JFrame
             javax.help.CSH.setHelpIDString(curr_component, help_id);
             if (!this.is_web_start)
             {
-                help_broker.enableHelpKey(curr_component, help_id, help_set);
+                //FIXME
+//                help_broker.enableHelpKey(curr_component, help_id, help_set);
             }
         }
     }

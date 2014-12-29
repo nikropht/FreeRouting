@@ -76,3 +76,11 @@ Here are some instructions how to run the Freerouting project in the NetBeans ID
 
 For optional parameters of the Freerouting outfile check the usage of the variable p_args in the source file gui/MainApplication.java.
 
+How to run the Freerouting project as a standalone application
+===========================================================================================
+
+```shell
+$ mvn package
+
+$ java -jar target/freerouting-1.0-SNAPSHOT-jar-with-dependencies.jar
+```

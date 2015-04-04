@@ -44,7 +44,6 @@ need a JABA soft from oracle
 check here:
 
 https://wiki.debian.org/Java/
-
 or
 
 https://www.digitalocean.com/community/tutorials/how-to-manually-install-oracle-java-on-a-debian-or-ubuntu-vps
@@ -59,7 +58,7 @@ now clone and run
 
 ```
 ./build.sh
-and
+
 ./install.sh
 ```
 

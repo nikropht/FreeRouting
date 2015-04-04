@@ -36,8 +36,7 @@ For more information please use the online help in the board editor. From here y
 If you have further questions or want some feedback, please sent an Email to support@ FreeRouting.net or visit our forum.
 
 
-Use on Debian:
-=============
+#Use on Debian:
 
 need a JABA soft from oracle
 
@@ -61,6 +60,8 @@ now clone and run
 
 ./install.sh
 ```
+
+##Kicad
 
 
 Additional steps for users of CadSoft-Eagle:

@@ -35,6 +35,12 @@ For more information please use the online help in the board editor. From here y
 
 If you have further questions or want some feedback, please sent an Email to support@ FreeRouting.net or visit our forum.
 
+
+Use on Debian:
+=============
+
+
+
 Additional steps for users of CadSoft-Eagle:
 ============================================
 

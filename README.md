@@ -38,19 +38,30 @@ If you have further questions or want some feedback, please sent an Email to sup
 
 Use on Debian:
 =============
+
 need a JABA soft from oracle
+
 check here:
+
 https://wiki.debian.org/Java/
+
 or
+
 https://www.digitalocean.com/community/tutorials/how-to-manually-install-oracle-java-on-a-debian-or-ubuntu-vps
+
 need build deps:
+
+```
 apt-get isntall javahelp2 icedtea-netx-common
+```
 
 now clone and run
+
+```
 ./build.sh
 and
 ./install.sh
-
+```
 
 
 Additional steps for users of CadSoft-Eagle:

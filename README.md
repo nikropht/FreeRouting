@@ -56,9 +56,9 @@ apt-get isntall javahelp2 icedtea-netx-common
 now clone and run
 
 ```
-./build.sh
+bash build.sh
 
-./install.sh
+bash install.sh
 ```
 
 ##Kicad

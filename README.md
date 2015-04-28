@@ -61,6 +61,15 @@ bash build.sh
 bash install.sh
 ```
 
+and use it:
+```
+/opt/freerouter/run.sh
+```
+or
+```
+/opt/freerouter/runp.sh file.dsn
+```
+
 ##Kicad
 
 

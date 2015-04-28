@@ -35,6 +35,44 @@ For more information please use the online help in the board editor. From here y
 
 If you have further questions or want some feedback, please sent an Email to support@ FreeRouting.net or visit our forum.
 
+
+#Use on Debian:
+
+need a JABA soft from oracle
+
+check here:
+
+https://wiki.debian.org/Java/
+or
+
+https://www.digitalocean.com/community/tutorials/how-to-manually-install-oracle-java-on-a-debian-or-ubuntu-vps
+
+need build deps:
+
+```
+apt-get isntall javahelp2 icedtea-netx-common
+```
+
+now clone and run
+
+```
+bash build.sh
+
+bash install.sh
+```
+
+and use it:
+```
+/opt/freerouter/run.sh
+```
+or
+```
+/opt/freerouter/runp.sh file.dsn
+```
+
+##Kicad
+
+
 Additional steps for users of CadSoft-Eagle:
 ============================================
 

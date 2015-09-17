@@ -78,9 +78,18 @@ For optional parameters of the Freerouting outfile check the usage of the variab
 
 How to run the Freerouting project as a standalone application
 ===========================================================================================
+Using maven
 
 ```shell
 $ mvn package
 
 $ java -jar target/freerouting-1.0-SNAPSHOT-jar-with-dependencies.jar
+```
+
+Using gradle
+
+```shell
+$ gradle build
+
+$ java -jar build/libs/FreeRouting.jar
 ```

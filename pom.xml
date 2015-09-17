@@ -27,11 +27,9 @@
             <version>2.0.05</version>
         </dependency>
         <dependency>
-            <groupId>javax.jnlp</groupId>
-            <artifactId>jnlp-api</artifactId>
-            <version>7.0</version>
-            <scope>system</scope>
-            <systemPath>/usr/share/icedtea-web/netx.jar</systemPath>
+            <groupId>org.jvnet.hudson</groupId>
+            <artifactId>netx</artifactId>
+            <version>0.5-hudson-2</version>
         </dependency>
     </dependencies>
     <build>

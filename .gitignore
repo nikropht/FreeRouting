@@ -1,3 +1,7 @@
-target/
-.idea/
+/target
+.idea
+/.gradle
+/build
 *.iml
+*.swp
+

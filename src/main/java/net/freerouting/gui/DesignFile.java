@@ -21,6 +21,7 @@
 package net.freerouting.gui;
 
 import net.freerouting.datastructures.FileFilter;
+import net.freerouting.interactive.BoardHandling;
 
 /**
  *  File functionality with security restrictions used, when the application is opened with Java Webstart
@@ -34,51 +35,39 @@ public class DesignFile
     public static final String[] text_file_extensions = {"dsn"};
     public static final String binary_file_extension = "bin";
 
-    public static DesignFile get_instance(String p_design_file_name, boolean p_is_webstart)
+    public static DesignFile get_instance(String p_design_file_name)
     {
         if (p_design_file_name == null)
         {
             return null;
         }
-        DesignFile result = new DesignFile(p_is_webstart, null, new java.io.File(p_design_file_name), null);
-        return result;
+        return new DesignFile(null, new java.io.File(p_design_file_name), null);
     }
 
     /**
      * Shows a file chooser for opening a design file.
      * If p_is_webstart there are security restrictions because the application was opened with java web start.
      */
-    public static DesignFile open_dialog(boolean p_is_webstart, String p_design_dir_name)
+    public static DesignFile open_dialog(String p_design_dir_name)
     {
-        DesignFile result;
-        if (p_is_webstart)
+        javax.swing.JFileChooser file_chooser = new javax.swing.JFileChooser(p_design_dir_name);
+        FileFilter file_filter = new FileFilter(all_file_extensions);
+        file_chooser.setFileFilter(file_filter);
+        file_chooser.showOpenDialog(null);
+        java.io.File curr_design_file = file_chooser.getSelectedFile();
+        if (curr_design_file == null)
         {
-            result = webstart_open_dialog(p_design_dir_name);
+            return null;
         }
-        else
-        {
-            javax.swing.JFileChooser file_chooser = new javax.swing.JFileChooser(p_design_dir_name);
-            FileFilter file_filter = new FileFilter(all_file_extensions);
-            file_chooser.setFileFilter(file_filter);
-            file_chooser.showOpenDialog(null);
-            java.io.File curr_design_file = file_chooser.getSelectedFile();
-            if (curr_design_file == null)
-            {
-                return null;
-            }
-            result = new DesignFile(false, null, curr_design_file, file_chooser);
-        }
-        return result;
+        return new DesignFile(null, curr_design_file, file_chooser);
     }
 
     /**
      * Creates a new instance of DesignFile.
-     * If p_is_webstart, the application was opened with Java Web Start.
      */
-    private DesignFile(boolean p_is_webstart, javax.jnlp.FileContents p_file_contents,
-            java.io.File p_design_file, javax.swing.JFileChooser p_file_chooser)
+    private DesignFile(javax.jnlp.FileContents p_file_contents,
+                       java.io.File p_design_file, javax.swing.JFileChooser p_file_chooser)
     {
-        this.is_webstart = p_is_webstart;
         this.file_contents = p_file_contents;
         this.file_chooser = p_file_chooser;
         this.input_file = p_design_file;
@@ -101,34 +90,16 @@ public class DesignFile
     public java.io.InputStream get_input_stream()
     {
         java.io.InputStream result;
-        if (this.is_webstart)
+        if (this.input_file == null)
         {
-
-            if (this.file_contents == null)
-            {
-                return null;
-            }
-            try
-            {
-                result = this.file_contents.getInputStream();
-            } catch (Exception e)
-            {
-                result = null;
-            }
+            return null;
         }
-        else
+        try
         {
-            if (this.input_file == null)
-            {
-                return null;
-            }
-            try
-            {
-                result = new java.io.FileInputStream(this.input_file);
-            } catch (Exception e)
-            {
-                result = null;
-            }
+            result = new java.io.FileInputStream(this.input_file);
+        } catch (Exception e)
+        {
+            result = null;
         }
         return result;
     }
@@ -337,61 +308,23 @@ public class DesignFile
     }
 
     public static boolean read_rules_file(String p_design_name, String p_parent_name,
-            net.freerouting.interactive.BoardHandling p_board_handling, boolean p_is_web_start, String p_confirm_message)
+                                          BoardHandling p_board_handling, String p_confirm_message)
     {
-
-        boolean result = true;
+        boolean result;
         String rule_file_name = p_design_name + ".rules";
         boolean dsn_file_generated_by_host = p_board_handling.get_routing_board().communication.specctra_parser_info.dsn_file_generated_by_host;
-        if (p_is_web_start)
-        {
-            java.io.InputStream input_stream = WebStart.get_file_input_stream(rule_file_name);
-            if (input_stream != null && dsn_file_generated_by_host && WindowMessage.confirm(p_confirm_message))
-            {
-                result = net.freerouting.designformats.specctra.RulesFile.read(input_stream, p_design_name, p_board_handling);
-                try
-                {
-                    input_stream.close();
-                } catch (Exception e)
-                {
-                    result = false;
-                }
-            }
-            else
-            {
+        try {
+            java.io.File rules_file = new java.io.File(p_parent_name, rule_file_name);
+            java.io.InputStream input_stream = new java.io.FileInputStream(rules_file);
+            result = dsn_file_generated_by_host && WindowMessage.confirm(p_confirm_message) && net.freerouting.designformats.specctra.RulesFile.read(input_stream, p_design_name, p_board_handling);
+            try {
+                input_stream.close();
+                rules_file.delete();
+            } catch (java.io.IOException e) {
                 result = false;
             }
-            WebStart.delete_files(RULES_FILE_EXTENSION, null);
-        }
-        else
-        {
-            try
-            {
-                java.io.File rules_file = new java.io.File(p_parent_name, rule_file_name);
-                java.io.InputStream input_stream = new java.io.FileInputStream(rules_file);
-                if (input_stream != null && dsn_file_generated_by_host && WindowMessage.confirm(p_confirm_message))
-                {
-                    result = net.freerouting.designformats.specctra.RulesFile.read(input_stream, p_design_name, p_board_handling);
-                }
-                else
-                {
-                    result = false;
-                }
-                try
-                {
-                    if (input_stream != null)
-                    {
-                        input_stream.close();
-                    }
-                    rules_file.delete();
-                } catch (java.io.IOException e)
-                {
-                    result = false;
-                }
-            } catch (java.io.FileNotFoundException e)
-            {
-                result = false;
-            }
+        } catch (java.io.FileNotFoundException e) {
+            result = false;
         }
         return result;
     }
@@ -458,7 +391,7 @@ public class DesignFile
                     (javax.jnlp.FileOpenService) javax.jnlp.ServiceManager.lookup("javax.jnlp.FileOpenService");
             javax.jnlp.FileContents file_contents =
                     file_open_service.openFileDialog(p_design_dir_name, DesignFile.text_file_extensions);
-            return new DesignFile(true, file_contents, null, null);
+            return new DesignFile(file_contents, null, null);
         } catch (Exception e)
         {
             return null;
@@ -587,7 +520,8 @@ public class DesignFile
     {
         return this.is_webstart || this.input_file != this.output_file;
     }
-    private final boolean is_webstart;
+
+    private final boolean is_webstart = false;
     /** Used, if the application is run with Java Web Start. */
     private javax.jnlp.FileContents file_contents;
     /** Used, if the application is run without Java Web Start. */

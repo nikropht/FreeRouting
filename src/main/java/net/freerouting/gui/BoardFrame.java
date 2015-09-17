@@ -16,17 +16,15 @@
 
 package net.freerouting.gui;
 
+import net.freerouting.board.BoardObservers;
+import net.freerouting.board.TestLevel;
+import net.freerouting.datastructures.FileFilter;
+import net.freerouting.datastructures.IdNoGenerator;
+import net.freerouting.designformats.specctra.DsnFile;
 import net.freerouting.interactive.ScreenMessages;
 
 import java.io.File;
-
-import net.freerouting.datastructures.FileFilter;
-import net.freerouting.datastructures.IdNoGenerator;
-
-import net.freerouting.board.TestLevel;
-import net.freerouting.board.BoardObservers;
-
-import net.freerouting.designformats.specctra.DsnFile;
+import java.io.InputStream;
 
 /**
  *
@@ -39,7 +37,7 @@ public class BoardFrame extends javax.swing.JFrame
 {
     public enum Option
     {
-        FROM_START_MENU, SINGLE_FRAME, SESSION_FILE, WEBSTART, EXTENDED_TOOL_BAR
+        FROM_START_MENU, SINGLE_FRAME, SESSION_FILE, EXTENDED_TOOL_BAR
     }
     
     /**
@@ -48,7 +46,7 @@ public class BoardFrame extends javax.swing.JFrame
     public static BoardFrame get_embedded_instance(String p_design_file_path_name,
             BoardObservers p_observers, IdNoGenerator p_id_no_generator, java.util.Locale p_locale)
     {
-        final net.freerouting.gui.DesignFile design_file = net.freerouting.gui.DesignFile.get_instance(p_design_file_path_name, false);
+        final net.freerouting.gui.DesignFile design_file = net.freerouting.gui.DesignFile.get_instance(p_design_file_path_name);
         if (design_file == null)
         {
             WindowMessage.show("designfile not found");
@@ -56,14 +54,9 @@ public class BoardFrame extends javax.swing.JFrame
         }
         net.freerouting.gui.BoardFrame board_frame = new net.freerouting.gui.BoardFrame(design_file, net.freerouting.gui.BoardFrame.Option.SINGLE_FRAME,
                 TestLevel.RELEASE_VERSION, p_observers, p_id_no_generator, p_locale, false);
-        
-        
-        if (board_frame == null)
-        {
-            WindowMessage.show("board_frame is null");
-            return null;
-        }
-        java.io.InputStream input_stream = design_file.get_input_stream();
+
+
+        InputStream input_stream = design_file.get_input_stream();
         boolean read_ok =  board_frame.read(input_stream, true, null);
         if (!read_ok)
         {
@@ -79,7 +72,6 @@ public class BoardFrame extends javax.swing.JFrame
      * If p_option = FROM_START_MENU this frame is created from a start menu frame.
      * If p_option = SINGLE_FRAME, this frame is created directly a single frame.
      * If p_option = Option.IN_SAND_BOX, no security sensitive actions like for example choosing
-     *  If p_option = Option.WEBSTART, the application has  been started with Java Webstart.
      * files are allowed, so that the frame can be used in an applet.
      * Currently Option.EXTENDED_TOOL_BAR is used only if a new board is
      * created by the application from scratch.
@@ -103,7 +95,6 @@ public class BoardFrame extends javax.swing.JFrame
             net.freerouting.datastructures.IdNoGenerator p_item_id_no_generator, java.util.Locale p_locale, boolean p_confirm_cancel)
     {
         this.design_file = p_design;
-        this.is_web_start = (p_option == Option.WEBSTART);
         this.test_level = p_test_level;
         
         this.confirm_cancel = p_confirm_cancel;
@@ -145,8 +136,8 @@ public class BoardFrame extends javax.swing.JFrame
         this.scroll_pane.setPreferredSize(new java.awt.Dimension(1150, 800));
         this.scroll_pane.setVerifyInputWhenFocusTarget(false);
         this.add(scroll_pane, java.awt.BorderLayout.CENTER);
-        
-        this.board_panel = new BoardPanel(screen_messages, this, this.is_web_start, p_locale);
+
+        this.board_panel = new BoardPanel(screen_messages, this, p_locale);
         this.scroll_pane.setViewportView(board_panel);
         
         this.setTitle(resources.getString("title"));
@@ -158,7 +149,7 @@ public class BoardFrame extends javax.swing.JFrame
     /**
      * Reads interactive actions from a logfile.
      */
-    void read_logfile(java.io.InputStream p_input_stream)
+    void read_logfile(InputStream p_input_stream)
     {
         board_panel.board_handling.read_logfile(p_input_stream);
     }
@@ -169,7 +160,7 @@ public class BoardFrame extends javax.swing.JFrame
      * If p_is_import, the design is read from a scpecctra dsn file.
      * Returns false, if the file is invalid.
      */
-    boolean read(java.io.InputStream p_input_stream, boolean p_is_import, javax.swing.JTextField p_message_field)
+    boolean read(InputStream p_input_stream, boolean p_is_import, javax.swing.JTextField p_message_field)
     {
         java.awt.Point viewport_position = null;
         if (p_is_import)
@@ -258,25 +249,16 @@ public class BoardFrame extends javax.swing.JFrame
         if (p_is_import)
         {
             // Read the default gui settings, if gui default file exists.
-            java.io.InputStream input_stream = null;
+            InputStream input_stream = null;
             boolean defaults_file_found;
-            if (this.is_web_start)
+            File defaults_file = new File(this.design_file.get_parent(), GUI_DEFAULTS_FILE_NAME);
+            defaults_file_found = true;
+            try
             {
-                input_stream = WebStart.get_file_input_stream(BoardFrame.GUI_DEFAULTS_FILE_NAME);
-                defaults_file_found = (input_stream != null);
-            }
-            else
+                input_stream = new java.io.FileInputStream(defaults_file);
+            } catch (java.io.FileNotFoundException e)
             {
-                File defaults_file = new File(this.design_file.get_parent(), GUI_DEFAULTS_FILE_NAME);
-                defaults_file_found = true;
-                try
-                {
-                    input_stream = new java.io.FileInputStream(defaults_file);
-                }
-                catch (java.io.FileNotFoundException e)
-                {
-                    defaults_file_found = false;
-                }
+                defaults_file_found = false;
             }
             if (defaults_file_found)
             {
@@ -378,11 +360,7 @@ public class BoardFrame extends javax.swing.JFrame
             }
             String help_id = "html_files." + p_help_id;
             javax.help.CSH.setHelpIDString(curr_component, help_id);
-            if (!this.is_web_start)
-            {
-                //FIXME
-//                help_broker.enableHelpKey(curr_component, help_id, help_set);
-            }
+            help_broker.enableHelpKey(curr_component, help_id, help_set);
         }
     }
     
@@ -686,7 +664,7 @@ public class BoardFrame extends javax.swing.JFrame
     private final TestLevel test_level;
     
     /** true, if the frame is created by an application running under Java Web Start */
-    final boolean is_web_start;
+    final boolean is_web_start = false;
     
     private final boolean help_system_used;
     static javax.help.HelpSet help_set = null;

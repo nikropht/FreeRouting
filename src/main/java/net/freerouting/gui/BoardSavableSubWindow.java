@@ -25,67 +25,54 @@ package net.freerouting.gui;
  *
  * @author Alfons Wirtz
  */
-public abstract class BoardSavableSubWindow extends BoardSubWindow
-{
-    
+public abstract class BoardSavableSubWindow extends BoardSubWindow {
+
     /**
      * Reads the data of this frame from disc.
      * Returns false, if the reading failed.
      */
-    public boolean read(java.io.ObjectInputStream p_object_stream)
-    {
-        try
-        {
+    public boolean read(java.io.ObjectInputStream p_object_stream) {
+        try {
             SavedAttributes saved_attributes = (SavedAttributes) p_object_stream.readObject();
             this.setBounds(saved_attributes.bounds);
             this.setVisible(saved_attributes.is_visible);
             return true;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             System.out.println("SelectParameterWindow.read: read failed");
             return false;
         }
     }
-    
+
     /**
      * Saves this frame to disk.
      */
-    public void save(java.io.ObjectOutputStream p_object_stream)
-    {
+    public void save(java.io.ObjectOutputStream p_object_stream) {
         SavedAttributes saved_attributes = new SavedAttributes(this.getBounds(), this.isVisible());
-        
-        try
-        {
+
+        try {
             p_object_stream.writeObject(saved_attributes);
-        }
-        catch (java.io.IOException e)
-        {
+        } catch (java.io.IOException e) {
             System.out.println("BoardSubWindow.save: save failed");
         }
     }
-    
-    /** 
+
+    /**
      * Refreshs the displayed values in this window.
      * To be overwritten in derived classes.
      */
-    public void refresh()
-    {
-        
+    public void refresh() {
+
     }
-    
+
     /**
      * Type for attributes of this class, which are saved to an Objectstream.
      */
-    static private class SavedAttributes implements java.io.Serializable
-    {
-        public SavedAttributes(java.awt.Rectangle p_bounds, boolean p_is_visible)
-        {
+    static private class SavedAttributes implements java.io.Serializable {
+        public final java.awt.Rectangle bounds;
+        public final boolean is_visible;
+        public SavedAttributes(java.awt.Rectangle p_bounds, boolean p_is_visible) {
             bounds = p_bounds;
             is_visible = p_is_visible;
         }
-        
-        public final java.awt.Rectangle bounds;
-        public final boolean is_visible;
     }
 }

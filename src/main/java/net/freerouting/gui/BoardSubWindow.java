@@ -26,20 +26,16 @@ package net.freerouting.gui;
  *
  * @author Alfons Wirtz
  */
-public class BoardSubWindow extends javax.swing.JFrame
-{
-  
-    public void parent_iconified()
-    {
+public class BoardSubWindow extends javax.swing.JFrame {
+
+    private boolean visible_before_iconifying = false;
+
+    public void parent_iconified() {
         this.visible_before_iconifying = this.isVisible();
         this.setVisible(false);
     }
-    
-    public void parent_deiconified()
-    {
+
+    public void parent_deiconified() {
         this.setVisible(this.visible_before_iconifying);
     }
-    
-    
-    private boolean visible_before_iconifying = false; 
 }

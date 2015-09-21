@@ -19,6 +19,7 @@
  */
 
 package net.freerouting.rules;
+
 import net.freerouting.library.Padstack;
 
 /**
@@ -27,73 +28,68 @@ import net.freerouting.library.Padstack;
  *
  * @author Alfons Wirtz
  */
-public class ViaInfo implements Comparable<ViaInfo>, net.freerouting.board.ObjectInfoPanel.Printable, java.io.Serializable
-{
-    
-    /** Creates a new instance of ViaRule */
+public class ViaInfo implements Comparable<ViaInfo>, net.freerouting.board.ObjectInfoPanel.Printable, java.io.Serializable {
+
+    private final BoardRules board_rules;
+    private String name;
+    private Padstack padstack;
+    private int clearance_class;
+    private boolean attach_smd_allowed;
+
+    /**
+     * Creates a new instance of ViaRule
+     */
     public ViaInfo(String p_name, Padstack p_padstack, int p_clearance_class, boolean p_drill_to_smd_allowed,
-            BoardRules p_board_rules)
-    {
+                   BoardRules p_board_rules) {
         name = p_name;
         padstack = p_padstack;
         clearance_class = p_clearance_class;
         attach_smd_allowed = p_drill_to_smd_allowed;
         board_rules = p_board_rules;
     }
-    
-    public String get_name()
-    {
+
+    public String get_name() {
         return name;
     }
-    
-    public void set_name(String p_name)
-    {
+
+    public void set_name(String p_name) {
         name = p_name;
     }
-    
-    public String toString()
-    {
+
+    public String toString() {
         return this.name;
     }
-    
-    public Padstack get_padstack()
-    {
+
+    public Padstack get_padstack() {
         return padstack;
     }
-    
-    public void set_padstack(Padstack p_padstack)
-    {
+
+    public void set_padstack(Padstack p_padstack) {
         padstack = p_padstack;
     }
-    
-    public int get_clearance_class()
-    {
+
+    public int get_clearance_class() {
         return clearance_class;
     }
-    
-    public void set_clearance_class(int p_clearance_class)
-    {
+
+    public void set_clearance_class(int p_clearance_class) {
         clearance_class = p_clearance_class;
     }
-    
-    public boolean attach_smd_allowed()
-    {
+
+    public boolean attach_smd_allowed() {
         return attach_smd_allowed;
     }
-    
-    public void set_attach_smd_allowed(boolean p_attach_smd_allowed)
-    {
+
+    public void set_attach_smd_allowed(boolean p_attach_smd_allowed) {
         attach_smd_allowed = p_attach_smd_allowed;
     }
-    
-    public int compareTo(ViaInfo p_other)
-    {
+
+    public int compareTo(ViaInfo p_other) {
         return this.name.compareTo(p_other.name);
     }
-    
-    public void print_info(net.freerouting.board.ObjectInfoPanel p_window, java.util.Locale p_locale)
-    {
-        java.util.ResourceBundle resources = 
+
+    public void print_info(net.freerouting.board.ObjectInfoPanel p_window, java.util.Locale p_locale) {
+        java.util.ResourceBundle resources =
                 java.util.ResourceBundle.getBundle("net.freerouting.board.ObjectInfoPanel", p_locale);
         p_window.append_bold(resources.getString("via") + " ");
         p_window.append_bold(this.name);
@@ -104,20 +100,11 @@ public class ViaInfo implements Comparable<ViaInfo>, net.freerouting.board.Objec
         String curr_name = board_rules.clearance_matrix.get_name(this.clearance_class);
         p_window.append(curr_name, resources.getString("clearance_class_2"), board_rules.clearance_matrix.get_row(this.clearance_class));
         p_window.append(", " + resources.getString("attach_smd") + " ");
-        if (attach_smd_allowed)
-        {
+        if (attach_smd_allowed) {
             p_window.append(" " + resources.getString("on"));
-        }
-        else
-        {
-            p_window.append(" " + resources.getString("off") );
+        } else {
+            p_window.append(" " + resources.getString("off"));
         }
         p_window.newline();
     }
-    
-    private String name;
-    private Padstack padstack;
-    private int clearance_class;
-    private boolean attach_smd_allowed;
-    private final BoardRules board_rules;
 }

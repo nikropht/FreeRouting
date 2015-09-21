@@ -23,73 +23,59 @@ package net.freerouting.datastructures;
 /**
  * Handles the indenting  of scopes while writing to an output text file.
  *
- * @author  alfons
+ * @author alfons
  */
-public class IndentFileWriter extends java.io.OutputStreamWriter
-{
-    
-    /** Creates a new instance of IndentFileWriter */
-    public IndentFileWriter(java.io.OutputStream p_stream)
-    {
+public class IndentFileWriter extends java.io.OutputStreamWriter {
+
+    private static final String INDENT_STRING = "  ";
+    private static final String BEGIN_SCOPE = "(";
+    private static final String END_SCOPE = ")";
+    private int current_indent_level = 0;
+
+    /**
+     * Creates a new instance of IndentFileWriter
+     */
+    public IndentFileWriter(java.io.OutputStream p_stream) {
         super(p_stream);
     }
-    
+
     /**
      * Begins a new scope.
      */
-    public void start_scope()
-    {
+    public void start_scope() {
         new_line();
-        try
-        {
+        try {
             write(BEGIN_SCOPE);
-        }
-        catch (java.io.IOException e)
-        {
+        } catch (java.io.IOException e) {
             System.out.println("IndentFileWriter.start_scope: unable to write to file");
         }
         ++current_indent_level;
     }
-    
+
     /**
      * Closes the latest open scope.
      */
-    public void end_scope()
-    {
+    public void end_scope() {
         --current_indent_level;
         new_line();
-        try
-        {
+        try {
             write(END_SCOPE);
-        }
-        catch (java.io.IOException e)
-        {
+        } catch (java.io.IOException e) {
             System.out.println("IndentFileWriter.end_scope: unable to write to file");
         }
     }
-    
+
     /**
      * Starts a new line inside a scope.
      */
-    public void new_line()
-    {
-        try
-        {
+    public void new_line() {
+        try {
             write("\n");
-            for (int i = 0; i < current_indent_level; ++i)
-            {
+            for (int i = 0; i < current_indent_level; ++i) {
                 write(INDENT_STRING);
             }
-        }
-        catch (java.io.IOException e)
-        {
+        } catch (java.io.IOException e) {
             System.out.println("IndentFileWriter.new_line: unable to write to file");
         }
     }
-    
-    private int current_indent_level = 0;
-    
-    private static final String INDENT_STRING = "  ";
-    private static final String BEGIN_SCOPE = "(";
-    private static final String END_SCOPE = ")";
 }

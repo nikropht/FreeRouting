@@ -26,13 +26,12 @@ package net.freerouting.datastructures;
  *
  * @author alfons
  */
-public interface Stoppable
-{
+public interface Stoppable {
     /**
      * Requests this thread to be stopped.
      */
     void request_stop();
-    
+
     /**
      * Returns true, if this thread is requested to be stopped.
      */

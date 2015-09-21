@@ -22,14 +22,13 @@ package net.freerouting.designformats.specctra;
 /**
  * Enumeration class for keywords of the specctra dsn file format
  *
- * @author  alfons
+ * @author alfons
  */
-public class Keyword
-{
+public class Keyword {
 
     /**
      * The only instances of the internal classes:
-     *
+     * <p/>
      * ScopeKeywords  with an inividual read_scope method are defined in an extra class,
      */
     public static final Keyword ABSOLUTE = new Keyword("absolute");
@@ -136,20 +135,20 @@ public class Keyword
     public static final Keyword WIRE = new Keyword("wire");
     public static final ScopeKeyword WIRING_SCOPE = new Wiring();
     public static final Keyword WRITE_RESOLUTION = new Keyword("write_resolution");
+    private final String name;
+
+    /**
+     * prevents creating more instances
+     */
+    protected Keyword(String p_name) {
+        name = p_name;
+    }
 
     /**
      * Returns the name string of this Keyword.
      * The name is used for debugging purposes.
      */
-    public String get_name()
-    {
+    public String get_name() {
         return name;
-    }
-    private final String name;
-
-    /** prevents creating more instances */
-    protected Keyword(String p_name)
-    {
-        name = p_name;
     }
 }

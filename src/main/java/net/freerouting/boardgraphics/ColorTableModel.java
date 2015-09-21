@@ -26,34 +26,31 @@ import javax.swing.table.AbstractTableModel;
  *
  * @author Alfons Wirtz
  */
-public abstract class ColorTableModel extends AbstractTableModel
-{
+public abstract class ColorTableModel extends AbstractTableModel {
 
-    protected ColorTableModel(int p_row_count, java.util.Locale p_locale)
-    {
-        this.data = new Object[p_row_count] [];
+    protected final Object[][] data;
+    protected final java.util.Locale locale;
+
+    protected ColorTableModel(int p_row_count, java.util.Locale p_locale) {
+        this.data = new Object[p_row_count][];
         this.locale = p_locale;
     }
-    
+
     protected ColorTableModel(java.io.ObjectInputStream p_stream)
-            throws java.io.IOException, java.lang.ClassNotFoundException
-    {
+            throws java.io.IOException, java.lang.ClassNotFoundException {
         this.data = (Object[][]) p_stream.readObject();
         this.locale = (java.util.Locale) p_stream.readObject();
     }
 
-    public int getRowCount()
-    {
+    public int getRowCount() {
         return data.length;
     }
 
-    public Object getValueAt(int p_row, int p_col)
-    {
+    public Object getValueAt(int p_row, int p_col) {
         return data[p_row][p_col];
     }
 
-    public void setValueAt(Object p_value, int p_row, int p_col)
-    {
+    public void setValueAt(Object p_value, int p_row, int p_col) {
         data[p_row][p_col] = p_value;
         fireTableCellUpdated(p_row, p_col);
     }
@@ -64,19 +61,13 @@ public abstract class ColorTableModel extends AbstractTableModel
      * then the last column would contain text ("true"/"false"),
      * rather than a check box.
      */
-    public Class<?> getColumnClass(int p_c)
-    {
+    public Class<?> getColumnClass(int p_c) {
         return getValueAt(0, p_c).getClass();
     }
 
-    
     protected void write_object(java.io.ObjectOutputStream p_stream)
-            throws java.io.IOException
-    {
+            throws java.io.IOException {
         p_stream.writeObject(this.data);
         p_stream.writeObject(this.locale);
     }
-    
-    protected final Object[][] data;
-    protected final java.util.Locale locale;
 }

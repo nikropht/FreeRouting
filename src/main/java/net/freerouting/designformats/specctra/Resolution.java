@@ -23,60 +23,18 @@ package net.freerouting.designformats.specctra;
 /**
  * Class for reading resolution scopes from dsn-files.
  *
- * @author  alfons
+ * @author alfons
  */
-public class Resolution extends ScopeKeyword
-{
-    
-    /** Creates a new instance of Resolution */
-    public Resolution()
-    {
+public class Resolution extends ScopeKeyword {
+
+    /**
+     * Creates a new instance of Resolution
+     */
+    public Resolution() {
         super("resolution");
     }
-    
-    public boolean read_scope(ReadScopeParameter p_par)
-    {
-        try
-        {
-            // read the unit
-            Object next_token = p_par.scanner.next_token();
-            if (!(next_token instanceof String))
-            {
-                System.out.println("Resolution.read_scope: string expected");
-                return false;
-            }
-            p_par.unit = net.freerouting.board.Unit.from_string((String) next_token);
-            if (p_par.unit == null)
-            {
-                System.out.println("Resolution.read_scope: unit mil, inch or mm expected");
-                return false;
-            }
-            // read the scale factor
-            next_token = p_par.scanner.next_token();
-            if (!(next_token instanceof Integer))
-            {
-                System.out.println("Resolution.read_scope: integer expected");
-                return false;
-            }
-            p_par.resolution = ((Integer)next_token).intValue();
-            // overread the closing bracket
-            next_token = p_par.scanner.next_token();
-            if (next_token != Keyword.CLOSED_BRACKET)
-            {
-                System.out.println("Resolution.read_scope: closing bracket expected");
-                return false;
-            }
-            return true;
-        }
-        catch (java.io.IOException e)
-        {
-            System.out.println("Resolution.read_scope: IO error scanning file");
-            return false;
-        }
-    }
-    
-    public static void write_scope(net.freerouting.datastructures.IndentFileWriter p_file, net.freerouting.board.Communication p_board_communication)  throws java.io.IOException
-    {
+
+    public static void write_scope(net.freerouting.datastructures.IndentFileWriter p_file, net.freerouting.board.Communication p_board_communication) throws java.io.IOException {
         p_file.new_line();
         p_file.write("(resolution ");
         p_file.write(p_board_communication.unit.toString());
@@ -84,5 +42,38 @@ public class Resolution extends ScopeKeyword
         p_file.write((new Integer(p_board_communication.resolution)).toString());
         p_file.write(")");
     }
-    
+
+    public boolean read_scope(ReadScopeParameter p_par) {
+        try {
+            // read the unit
+            Object next_token = p_par.scanner.next_token();
+            if (!(next_token instanceof String)) {
+                System.out.println("Resolution.read_scope: string expected");
+                return false;
+            }
+            p_par.unit = net.freerouting.board.Unit.from_string((String) next_token);
+            if (p_par.unit == null) {
+                System.out.println("Resolution.read_scope: unit mil, inch or mm expected");
+                return false;
+            }
+            // read the scale factor
+            next_token = p_par.scanner.next_token();
+            if (!(next_token instanceof Integer)) {
+                System.out.println("Resolution.read_scope: integer expected");
+                return false;
+            }
+            p_par.resolution = ((Integer) next_token).intValue();
+            // overread the closing bracket
+            next_token = p_par.scanner.next_token();
+            if (next_token != Keyword.CLOSED_BRACKET) {
+                System.out.println("Resolution.read_scope: closing bracket expected");
+                return false;
+            }
+            return true;
+        } catch (java.io.IOException e) {
+            System.out.println("Resolution.read_scope: IO error scanning file");
+            return false;
+        }
+    }
+
 }

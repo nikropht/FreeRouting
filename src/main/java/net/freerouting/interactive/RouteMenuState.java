@@ -26,36 +26,34 @@ import net.freerouting.geometry.planar.FloatPoint;
  * Class implementing the different functionality in the route menu,
  * especially the different behaviour of the mouse button 1.
  *
- * @author  Alfons Wirtz
+ * @author Alfons Wirtz
  */
-public class RouteMenuState extends MenuState
-{
-    /** Returns a new instance of RouteMenuState */
-    public static RouteMenuState get_instance(BoardHandling p_board_handling, Logfile p_logfile)
-    {
+public class RouteMenuState extends MenuState {
+    /**
+     * Creates a new instance of RouteMenuState
+     */
+    private RouteMenuState(BoardHandling p_board_handling, Logfile p_logfile) {
+        super(p_board_handling, p_logfile);
+    }
+
+    /**
+     * Returns a new instance of RouteMenuState
+     */
+    public static RouteMenuState get_instance(BoardHandling p_board_handling, Logfile p_logfile) {
         RouteMenuState new_state = new RouteMenuState(p_board_handling, p_logfile);
         return new_state;
     }
-    
-    /** Creates a new instance of RouteMenuState */
-    private RouteMenuState(BoardHandling p_board_handling, Logfile p_logfile)
-    {
-        super(p_board_handling, p_logfile);
-    }
-    
-    public InteractiveState left_button_clicked(FloatPoint p_location)
-    {
+
+    public InteractiveState left_button_clicked(FloatPoint p_location) {
         return RouteState.get_instance(p_location, this, hdlg, logfile);
     }
-    
-    public void display_default_message()
-    {
+
+    public void display_default_message() {
         hdlg.screen_messages.set_status_message(" in route menu");
     }
-    
-    public String get_help_id()
-    {
+
+    public String get_help_id() {
         return "MenuState_RouteMenuState";
     }
-    
+
 }

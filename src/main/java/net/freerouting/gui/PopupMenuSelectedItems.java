@@ -25,40 +25,35 @@ package net.freerouting.gui;
  *
  * @author Alfons Wirtz
  */
-class PopupMenuSelectedItems extends PopupMenuDisplay
-{
-    
-    /** Creates a new instance of SelectedItemPopupMenu */
-    PopupMenuSelectedItems(BoardFrame p_board_frame)
-    {
+class PopupMenuSelectedItems extends PopupMenuDisplay {
+
+    /**
+     * Creates a new instance of SelectedItemPopupMenu
+     */
+    PopupMenuSelectedItems(BoardFrame p_board_frame) {
         super(p_board_frame);
-        java.util.ResourceBundle resources = 
+        java.util.ResourceBundle resources =
                 java.util.ResourceBundle.getBundle("net.freerouting.gui.Default", p_board_frame.get_locale());
         javax.swing.JMenuItem copy_item = new javax.swing.JMenuItem();
         copy_item.setText(resources.getString("copy"));
-        copy_item.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        copy_item.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 board_panel.board_handling.copy_selected_items(board_panel.right_button_click_location);
             }
         });
-        
-        if (board_panel.board_handling.get_routing_board().get_test_level() != net.freerouting.board.TestLevel.RELEASE_VERSION)
-        {
+
+        if (board_panel.board_handling.get_routing_board().get_test_level() != net.freerouting.board.TestLevel.RELEASE_VERSION) {
             this.add(copy_item);
         }
-        
+
         javax.swing.JMenuItem move_item = new javax.swing.JMenuItem();
         move_item.setText(resources.getString("move"));
-        move_item.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        move_item.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 board_panel.board_handling.move_selected_items(board_panel.right_button_click_location);
             }
         });
-        
+
         this.add(move_item, 0);
     }
 }

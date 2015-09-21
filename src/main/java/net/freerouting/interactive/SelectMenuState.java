@@ -26,41 +26,38 @@ import net.freerouting.geometry.planar.FloatPoint;
  * Class implementing the different functionality in the select menu,
  * especially the different behaviour of the mouse button 1.
  *
- * @author  Alfons Wirtz
+ * @author Alfons Wirtz
  */
-public class SelectMenuState extends MenuState
-{
-    /** Returns a new instance of SelectMenuState */
-    public static SelectMenuState get_instance(BoardHandling p_board_handling, Logfile p_logfile)
-    {
+public class SelectMenuState extends MenuState {
+    /**
+     * Creates a new instance of SelectMenuState
+     */
+    private SelectMenuState(BoardHandling p_board_handling, Logfile p_logfile) {
+        super(p_board_handling, p_logfile);
+    }
+
+    /**
+     * Returns a new instance of SelectMenuState
+     */
+    public static SelectMenuState get_instance(BoardHandling p_board_handling, Logfile p_logfile) {
         SelectMenuState new_state = new SelectMenuState(p_board_handling, p_logfile);
         return new_state;
     }
-    
-    /** Creates a new instance of SelectMenuState */
-    private SelectMenuState(BoardHandling p_board_handling, Logfile p_logfile)
-    {
-        super(p_board_handling, p_logfile);
-    }
-    
-    public InteractiveState left_button_clicked(FloatPoint p_location)
-    {
-        InteractiveState result =  select_items(p_location);
+
+    public InteractiveState left_button_clicked(FloatPoint p_location) {
+        InteractiveState result = select_items(p_location);
         return result;
     }
-    
-    public InteractiveState mouse_dragged(FloatPoint p_point)
-    {
+
+    public InteractiveState mouse_dragged(FloatPoint p_point) {
         return SelectItemsInRegionState.get_instance(hdlg.get_current_mouse_position(), this, hdlg, logfile);
     }
-    
-    public void display_default_message()
-    {
+
+    public void display_default_message() {
         hdlg.screen_messages.set_status_message(resources.getString("in_select_menu"));
     }
-    
-    public String get_help_id()
-    {
+
+    public String get_help_id() {
         return "MenuState_SelectMenuState";
     }
 }

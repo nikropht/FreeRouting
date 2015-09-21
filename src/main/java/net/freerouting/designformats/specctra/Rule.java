@@ -27,153 +27,117 @@ import java.util.LinkedList;
 /**
  * Class for reading and writing rule scopes from dsn-files.
  *
- * @author  Alfons Wirtz
+ * @author Alfons Wirtz
  */
-public abstract class Rule
-{
+public abstract class Rule {
     /**
      * Returns a collection of objects of class Rule.
      */
-    public static Collection<Rule> read_scope( Scanner p_scanner)
-    {
+    public static Collection<Rule> read_scope(Scanner p_scanner) {
         Collection<Rule> result = new LinkedList<Rule>();
         Object next_token = null;
-        for (;;)
-        {
+        for (; ; ) {
             Object prev_token = next_token;
-            try
-            {
+            try {
                 next_token = p_scanner.next_token();
-            }
-            catch (java.io.IOException e)
-            {
+            } catch (java.io.IOException e) {
                 System.out.println("Rule.read_scope: IO error scanning file");
                 System.out.println(e);
                 return null;
             }
-            if (next_token == null)
-            {
+            if (next_token == null) {
                 System.out.println("Rule.read_scope: unexpected end of file");
                 return null;
             }
-            if (next_token == Keyword.CLOSED_BRACKET)
-            {
+            if (next_token == Keyword.CLOSED_BRACKET) {
                 // end of scope
                 break;
             }
-            if (prev_token == Keyword.OPEN_BRACKET)
-            {
+            if (prev_token == Keyword.OPEN_BRACKET) {
                 Rule curr_rule = null;
-                if (next_token == Keyword.WIDTH)
-                {
+                if (next_token == Keyword.WIDTH) {
                     curr_rule = read_width_rule(p_scanner);
-                }
-                else if (next_token == Keyword.CLEARANCE)
-                {
+                } else if (next_token == Keyword.CLEARANCE) {
                     curr_rule = read_clearance_rule(p_scanner);
-                }
-                else
-                {
+                } else {
                     ScopeKeyword.skip_scope(p_scanner);
                 }
-                if (curr_rule != null)
-                {
+                if (curr_rule != null) {
                     result.add(curr_rule);
                 }
-                
+
             }
         }
         return result;
     }
-    
+
     /**
      * Reads a LayerRule from dsn-file.
      */
-    public static LayerRule read_layer_rule_scope( Scanner p_scanner)
-    {
-        try
-        {
+    public static LayerRule read_layer_rule_scope(Scanner p_scanner) {
+        try {
             Collection<String> layer_names = new LinkedList<String>();
             Collection<Rule> rule_list = new LinkedList<Rule>();
-            for (;;)
-            {
+            for (; ; ) {
                 p_scanner.yybegin(SpecctraFileScanner.LAYER_NAME);
                 Object next_token = p_scanner.next_token();
-                if (next_token == Keyword.OPEN_BRACKET)
-                {
+                if (next_token == Keyword.OPEN_BRACKET) {
                     break;
                 }
-                if (!(next_token instanceof String))
-                {
-                    
+                if (!(next_token instanceof String)) {
+
                     System.out.println("Rule.read_layer_rule_scope: string expected");
                     return null;
                 }
                 layer_names.add((String) next_token);
             }
-            for (;;)
-            {
+            for (; ; ) {
                 Object next_token = p_scanner.next_token();
-                if (next_token == Keyword.CLOSED_BRACKET)
-                {
+                if (next_token == Keyword.CLOSED_BRACKET) {
                     break;
                 }
-                if (next_token != Keyword.RULE)
-                {
-                    
+                if (next_token != Keyword.RULE) {
+
                     System.out.println("Rule.read_layer_rule_scope: rule expected");
                     return null;
                 }
                 rule_list.addAll(read_scope(p_scanner));
             }
             return new LayerRule(layer_names, rule_list);
-        }
-        catch (java.io.IOException e)
-        {
+        } catch (java.io.IOException e) {
             System.out.println("Rule.read_layer_rule_scope: IO error scanning file");
             return null;
         }
     }
-    
-    public static WidthRule read_width_rule(Scanner p_scanner)
-    {
-        try
-        {
+
+    public static WidthRule read_width_rule(Scanner p_scanner) {
+        try {
             double value;
             Object next_token = p_scanner.next_token();
-            if (next_token instanceof Double)
-            {
+            if (next_token instanceof Double) {
                 value = ((Double) next_token).doubleValue();
-            }
-            else if (next_token instanceof Integer)
-            {
+            } else if (next_token instanceof Integer) {
                 value = ((Integer) next_token).intValue();
-            }
-            else
-            {
+            } else {
                 System.out.println("Rule.read_width_rule: number expected");
                 return null;
             }
             next_token = p_scanner.next_token();
-            if (next_token != Keyword.CLOSED_BRACKET)
-            {
+            if (next_token != Keyword.CLOSED_BRACKET) {
                 System.out.println("Rule.read_width_rule: closing bracket expected");
                 return null;
             }
             return new WidthRule(value);
-        }
-        catch (java.io.IOException e)
-        {
+        } catch (java.io.IOException e) {
             System.out.println("Rule.read_width_rule: IO error scanning file");
             return null;
         }
     }
-    
-    public static void write_scope(net.freerouting.rules.NetClass p_net_class, WriteScopeParameter p_par) throws java.io.IOException
-    {
+
+    public static void write_scope(net.freerouting.rules.NetClass p_net_class, WriteScopeParameter p_par) throws java.io.IOException {
         p_par.file.start_scope();
         p_par.file.write("rule");
-        
+
         // write the trace width
         int default_trace_half_width = p_net_class.get_trace_half_width(0);
         double trace_width = 2 * p_par.coordinate_transform.board_to_dsn(default_trace_half_width);
@@ -182,28 +146,25 @@ public abstract class Rule
         p_par.file.write((new Double(trace_width)).toString());
         p_par.file.write(")");
         p_par.file.end_scope();
-        for (int i = 1; i < p_par.board.layer_structure.arr.length; ++i)
-        {
-            if (p_net_class.get_trace_half_width(i) != default_trace_half_width)
-            {
+        for (int i = 1; i < p_par.board.layer_structure.arr.length; ++i) {
+            if (p_net_class.get_trace_half_width(i) != default_trace_half_width) {
                 write_layer_rule(p_net_class, i, p_par);
             }
         }
     }
-    
-    private static void write_layer_rule(net.freerouting.rules.NetClass p_net_class, int p_layer_no, WriteScopeParameter p_par) throws java.io.IOException
-    {
+
+    private static void write_layer_rule(net.freerouting.rules.NetClass p_net_class, int p_layer_no, WriteScopeParameter p_par) throws java.io.IOException {
         p_par.file.start_scope();
         p_par.file.write("layer_rule ");
-        
+
         net.freerouting.board.Layer curr_board_layer = p_par.board.layer_structure.arr[p_layer_no];
-        
+
         p_par.file.write(curr_board_layer.name);
         p_par.file.start_scope();
         p_par.file.write("rule ");
-        
+
         int curr_trace_half_width = p_net_class.get_trace_half_width(p_layer_no);
-        
+
         // write the trace width
         double trace_width = 2 * p_par.coordinate_transform.board_to_dsn(curr_trace_half_width);
         p_par.file.new_line();
@@ -213,12 +174,11 @@ public abstract class Rule
         p_par.file.end_scope();
         p_par.file.end_scope();
     }
-    
+
     /**
      * Writes the default rule as a scope to an output dsn-file.
      */
-    public static void write_default_rule(WriteScopeParameter p_par, int p_layer) throws java.io.IOException
-    {
+    public static void write_default_rule(WriteScopeParameter p_par, int p_layer) throws java.io.IOException {
         p_par.file.start_scope();
         p_par.file.write("rule");
         // write the trace width
@@ -242,25 +202,21 @@ public abstract class Rule
         p_par.file.write(smd_to_turn_dist.toString());
         p_par.file.write(" (type smd_to_turn_gap))");
         int cl_count = p_par.board.rules.clearance_matrix.get_class_count();
-        for (int i = 1; i <= cl_count; ++i)
-        {
+        for (int i = 1; i <= cl_count; ++i) {
             write_clearance_rules(p_par, p_layer, i, cl_count, default_board_clearance);
         }
         p_par.file.end_scope();
     }
-    
+
     /**
      * Write the clearance rules, which are different from the default clearance.
      */
     private static void write_clearance_rules(WriteScopeParameter p_par,
-            int p_layer, int p_cl_class, int p_max_cl_class, int p_default_clearance) throws java.io.IOException
-    {
+                                              int p_layer, int p_cl_class, int p_max_cl_class, int p_default_clearance) throws java.io.IOException {
         net.freerouting.rules.ClearanceMatrix cl_matrix = p_par.board.rules.clearance_matrix;
-        for (int i = p_cl_class; i < p_max_cl_class; ++i)
-        {
+        for (int i = p_cl_class; i < p_max_cl_class; ++i) {
             int curr_board_clearance = cl_matrix.value(p_cl_class, i, p_layer);
-            if (curr_board_clearance == p_default_clearance)
-            {
+            if (curr_board_clearance == p_default_clearance) {
                 continue;
             }
             double curr_clearance = p_par.coordinate_transform.board_to_dsn(curr_board_clearance);
@@ -274,110 +230,88 @@ public abstract class Rule
             p_par.file.write("))");
         }
     }
-    
-    public static ClearanceRule read_clearance_rule(Scanner p_scanner)
-    {
-        try
-        {
+
+    public static ClearanceRule read_clearance_rule(Scanner p_scanner) {
+        try {
             double value;
             Object next_token = p_scanner.next_token();
-            if (next_token instanceof Double)
-            {
+            if (next_token instanceof Double) {
                 value = ((Double) next_token).doubleValue();
-            }
-            else if (next_token instanceof Integer)
-            {
+            } else if (next_token instanceof Integer) {
                 value = ((Integer) next_token).intValue();
-            }
-            else
-            {
+            } else {
                 System.out.println("Rule.read_clearance_rule: number expected");
                 return null;
             }
-            Collection<String> class_pairs = new LinkedList<String> ();
+            Collection<String> class_pairs = new LinkedList<String>();
             next_token = p_scanner.next_token();
-            if (next_token != Keyword.CLOSED_BRACKET)
-            {
-                if (next_token != Keyword.OPEN_BRACKET)
-                {
+            if (next_token != Keyword.CLOSED_BRACKET) {
+                if (next_token != Keyword.OPEN_BRACKET) {
                     System.out.println("Rule.read_clearance_rule: ( expected");
                     return null;
                 }
                 next_token = p_scanner.next_token();
-                if (next_token != Keyword.TYPE)
-                {
+                if (next_token != Keyword.TYPE) {
                     System.out.println("Rule.read_clearance_rule: type expected");
                     return null;
                 }
-                for (;;)
-                {
+                for (; ; ) {
                     p_scanner.yybegin(SpecctraFileScanner.IGNORE_QUOTE);
                     next_token = p_scanner.next_token();
-                    if (next_token == Keyword.CLOSED_BRACKET)
-                    {
+                    if (next_token == Keyword.CLOSED_BRACKET) {
                         break;
                     }
-                    if (!(next_token instanceof String))
-                    {
+                    if (!(next_token instanceof String)) {
                         System.out.println("Rule.read_clearance_rule: string expected");
                         return null;
                     }
-                    class_pairs.add((String)next_token);
+                    class_pairs.add((String) next_token);
                 }
                 next_token = p_scanner.next_token();
-                if (next_token != Keyword.CLOSED_BRACKET)
-                {
+                if (next_token != Keyword.CLOSED_BRACKET) {
                     System.out.println("Rule.read_clearance_rule: closing bracket expected");
                     return null;
                 }
             }
             return new ClearanceRule(value, class_pairs);
-        }
-        catch (java.io.IOException e)
-        {
+        } catch (java.io.IOException e) {
             System.out.println("Rule.read_clearance_rule: IO error scanning file");
             return null;
         }
-        
+
     }
-    
-    static public void write_item_clearance_class( String p_name, net.freerouting.datastructures.IndentFileWriter p_file,
-            net.freerouting.datastructures.IdentifierType p_identifier_type) throws java.io.IOException
-    {
+
+    static public void write_item_clearance_class(String p_name, net.freerouting.datastructures.IndentFileWriter p_file,
+                                                  net.freerouting.datastructures.IdentifierType p_identifier_type) throws java.io.IOException {
         p_file.new_line();
         p_file.write("(clearance_class ");
         p_identifier_type.write(p_name, p_file);
         p_file.write(")");
     }
-    
-    public static class WidthRule extends Rule
-    {
-        public WidthRule(double p_value)
-        {
+
+    public static class WidthRule extends Rule {
+        final double value;
+
+        public WidthRule(double p_value) {
             value = p_value;
         }
-        final double value;
     }
-    
-    public static class ClearanceRule extends Rule
-    {
-        public ClearanceRule(double p_value, Collection<String> p_class_pairs)
-        {
+
+    public static class ClearanceRule extends Rule {
+        final double value;
+        final Collection<String> clearance_class_pairs;
+        public ClearanceRule(double p_value, Collection<String> p_class_pairs) {
             value = p_value;
             clearance_class_pairs = p_class_pairs;
         }
-        final double value;
-        final Collection<String> clearance_class_pairs;
     }
-    
-    public static class LayerRule
-    {
-        LayerRule(Collection<String> p_layer_names, Collection<Rule> p_rules)
-        {
+
+    public static class LayerRule {
+        final Collection<String> layer_names;
+        final Collection<Rule> rules;
+        LayerRule(Collection<String> p_layer_names, Collection<Rule> p_rules) {
             layer_names = p_layer_names;
             rules = p_rules;
         }
-        final Collection<String> layer_names;
-        final Collection<Rule> rules;
     }
 }

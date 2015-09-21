@@ -27,7 +27,6 @@ package net.freerouting.board;
  *
  * @author alfons
  */
-public enum TestLevel
-{
+public enum TestLevel {
     RELEASE_VERSION, TEST_VERSION, CRITICAL_DEBUGGING_OUTPUT, ALL_DEBUGGING_OUTPUT
 }

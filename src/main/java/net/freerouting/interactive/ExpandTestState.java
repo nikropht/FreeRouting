@@ -19,70 +19,55 @@
  */
 package net.freerouting.interactive;
 
+import net.freerouting.autoroute.*;
+import net.freerouting.board.Item;
+import net.freerouting.board.RoutingBoard;
 import net.freerouting.geometry.planar.FloatPoint;
 import net.freerouting.geometry.planar.TileShape;
 
-import java.util.Collection;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.Iterator;
-
-import net.freerouting.autoroute.AutorouteControl;
-import net.freerouting.autoroute.CompleteFreeSpaceExpansionRoom;
-import net.freerouting.autoroute.IncompleteFreeSpaceExpansionRoom;
-import net.freerouting.autoroute.InsertFoundConnectionAlgo;
-import net.freerouting.autoroute.LocateFoundConnectionAlgo;
-import net.freerouting.autoroute.MazeSearchAlgo;
-import net.freerouting.autoroute.AutorouteEngine;
-
-import net.freerouting.board.Item;
-import net.freerouting.board.RoutingBoard;
+import java.util.*;
 
 /**
  * State for testing the expanding algorithm of the autorouter.
  *
- * @author  Alfons Wirtz
+ * @author Alfons Wirtz
  */
-public class ExpandTestState extends InteractiveState
-{
+public class ExpandTestState extends InteractiveState {
 
-    public static ExpandTestState get_instance(FloatPoint p_location, InteractiveState p_return_state, BoardHandling p_board_handling)
-    {
-        ExpandTestState result = new ExpandTestState(p_location, p_return_state, p_board_handling);
-        return result;
-    }
+    private boolean in_autoroute = false;
+    private MazeSearchAlgo maze_search_algo = null;
+    private LocateFoundConnectionAlgo autoroute_result = null;
+    private AutorouteControl control_settings;
+    private AutorouteEngine autoroute_engine;
 
-    /** Creates a new instance of ExpandTestState */
-    private ExpandTestState(FloatPoint p_location, InteractiveState p_return_state, BoardHandling p_board_handling)
-    {
+    /**
+     * Creates a new instance of ExpandTestState
+     */
+    private ExpandTestState(FloatPoint p_location, InteractiveState p_return_state, BoardHandling p_board_handling) {
         super(p_return_state, p_board_handling, null);
         init(p_location);
 
     }
 
-    public InteractiveState key_typed(char p_key_char)
-    {
+    public static ExpandTestState get_instance(FloatPoint p_location, InteractiveState p_return_state, BoardHandling p_board_handling) {
+        ExpandTestState result = new ExpandTestState(p_location, p_return_state, p_board_handling);
+        return result;
+    }
+
+    public InteractiveState key_typed(char p_key_char) {
         InteractiveState result;
-        if (p_key_char == 'n')
-        {
-            if (in_autoroute)
-            {
-                if (!this.maze_search_algo.occupy_next_element())
-                {
+        if (p_key_char == 'n') {
+            if (in_autoroute) {
+                if (!this.maze_search_algo.occupy_next_element()) {
                     // to display the backtack rooms
                     complete_autoroute();
                     hdlg.screen_messages.set_status_message("expansion completed");
                 }
-            }
-            else
-            {
+            } else {
                 boolean completing_succeeded = false;
-                while (!completing_succeeded)
-                {
+                while (!completing_succeeded) {
                     IncompleteFreeSpaceExpansionRoom next_room = this.autoroute_engine.get_first_incomplete_expansion_room();
-                    if (next_room == null)
-                    {
+                    if (next_room == null) {
                         hdlg.screen_messages.set_status_message("expansion completed");
                         break;
                     }
@@ -91,59 +76,43 @@ public class ExpandTestState extends InteractiveState
             }
             //hdlg.get_routing_board().autoroute_data().validate();
             result = this;
-        }
-        else if (p_key_char == 'a')
-        {
-            if (in_autoroute)
-            {
+        } else if (p_key_char == 'a') {
+            if (in_autoroute) {
                 complete_autoroute();
-            }
-            else
-            {
+            } else {
                 IncompleteFreeSpaceExpansionRoom next_room = this.autoroute_engine.get_first_incomplete_expansion_room();
-                while (next_room != null)
-                {
+                while (next_room != null) {
                     complete_expansion_room(next_room);
                     next_room = this.autoroute_engine.get_first_incomplete_expansion_room();
                 }
             }
             result = this;
-        //hdlg.get_routing_board().autoroute_data().validate();
-        }
-        else if (Character.isDigit(p_key_char))
-        {
+            //hdlg.get_routing_board().autoroute_data().validate();
+        } else if (Character.isDigit(p_key_char)) {
             // next 10^p_key_char expansions
             int d = Character.digit(p_key_char, 10);
             final int max_count = (int) Math.pow(10, d);
-            if (in_autoroute)
-            {
-                for (int i = 0; i < max_count; ++i)
-                {
-                    if (!this.maze_search_algo.occupy_next_element())
-                    {
+            if (in_autoroute) {
+                for (int i = 0; i < max_count; ++i) {
+                    if (!this.maze_search_algo.occupy_next_element()) {
                         // to display the backtack rooms
                         complete_autoroute();
                         hdlg.screen_messages.set_status_message("expansion completed");
                         break;
                     }
                 }
-            }
-            else
-            {
+            } else {
                 int curr_count = 0;
                 IncompleteFreeSpaceExpansionRoom next_room = this.autoroute_engine.get_first_incomplete_expansion_room();
-                while (next_room != null && curr_count < max_count)
-                {
+                while (next_room != null && curr_count < max_count) {
                     complete_expansion_room(next_room);
                     next_room = this.autoroute_engine.get_first_incomplete_expansion_room();
                     ++curr_count;
                 }
             }
             result = this;
-        //hdlg.get_routing_board().autoroute_data().validate();
-        }
-        else
-        {
+            //hdlg.get_routing_board().autoroute_data().validate();
+        } else {
             autoroute_engine.clear();
             result = super.key_typed(p_key_char);
         }
@@ -151,33 +120,27 @@ public class ExpandTestState extends InteractiveState
         return result;
     }
 
-    public InteractiveState left_button_clicked(FloatPoint p_location)
-    {
+    public InteractiveState left_button_clicked(FloatPoint p_location) {
         return cancel();
     }
 
-    public InteractiveState cancel()
-    {
+    public InteractiveState cancel() {
         autoroute_engine.clear();
         return this.return_state;
     }
 
-    public InteractiveState complete()
-    {
+    public InteractiveState complete() {
         return cancel();
     }
 
-    public void draw(java.awt.Graphics p_graphics)
-    {
+    public void draw(java.awt.Graphics p_graphics) {
         autoroute_engine.draw(p_graphics, hdlg.graphics_context, 0.1);
-        if (this.autoroute_result != null)
-        {
+        if (this.autoroute_result != null) {
             this.autoroute_result.draw(p_graphics, hdlg.graphics_context);
         }
     }
 
-    private void init(FloatPoint p_location)
-    {
+    private void init(FloatPoint p_location) {
         // look if an autoroute can be started at the input location
         RoutingBoard board = hdlg.get_routing_board();
         int layer = hdlg.settings.layer;
@@ -185,14 +148,11 @@ public class ExpandTestState extends InteractiveState
         Item route_item = null;
         int route_net_no = 0;
         Iterator<Item> it = found_items.iterator();
-        while (it.hasNext())
-        {
+        while (it.hasNext()) {
             Item curr_ob = it.next();
-            if (curr_ob instanceof net.freerouting.board.Connectable)
-            {
+            if (curr_ob instanceof net.freerouting.board.Connectable) {
                 Item curr_item = curr_ob;
-                if (curr_item.net_count() == 1 && curr_item.get_net_no(0) > 0)
-                {
+                if (curr_item.net_count() == 1 && curr_item.get_net_no(0) > 0) {
                     route_item = curr_item;
                     route_net_no = curr_item.get_net_no(0);
                     break;
@@ -207,8 +167,7 @@ public class ExpandTestState extends InteractiveState
         this.control_settings.vias_allowed = false;
         this.autoroute_engine = new AutorouteEngine(board, this.control_settings.trace_clearance_class_no, false);
         this.autoroute_engine.init_connection(route_net_no, null, null);
-        if (route_item == null)
-        {
+        if (route_item == null) {
             // create an expansion room in the empty space
             TileShape contained_shape = TileShape.get_instance(p_location.round());
             IncompleteFreeSpaceExpansionRoom expansion_room =
@@ -219,8 +178,7 @@ public class ExpandTestState extends InteractiveState
         }
         Set<Item> route_start_set = route_item.get_connected_set(route_net_no);
         Set<Item> route_dest_set = route_item.get_unconnected_set(route_net_no);
-        if (route_dest_set.size() > 0)
-        {
+        if (route_dest_set.size() > 0) {
             hdlg.screen_messages.set_status_message("autoroute test started");
             this.maze_search_algo =
                     MazeSearchAlgo.get_instance(route_start_set, route_dest_set, autoroute_engine, control_settings);
@@ -228,21 +186,18 @@ public class ExpandTestState extends InteractiveState
         }
     }
 
-    private void complete_autoroute()
-    {
+    private void complete_autoroute() {
         MazeSearchAlgo.Result search_result = this.maze_search_algo.find_connection();
-        if (search_result != null)
-        {
+        if (search_result != null) {
             SortedSet<Item> ripped_item_list = new TreeSet<Item>();
             this.autoroute_result =
                     LocateFoundConnectionAlgo.get_instance(search_result, control_settings,
-                    this.autoroute_engine.autoroute_search_tree,
-                    hdlg.get_routing_board().rules.get_trace_angle_restriction(),
-                    ripped_item_list, net.freerouting.board.TestLevel.ALL_DEBUGGING_OUTPUT);
+                            this.autoroute_engine.autoroute_search_tree,
+                            hdlg.get_routing_board().rules.get_trace_angle_restriction(),
+                            ripped_item_list, net.freerouting.board.TestLevel.ALL_DEBUGGING_OUTPUT);
             hdlg.get_routing_board().generate_snapshot();
             SortedSet<Item> ripped_connections = new TreeSet<Item>();
-            for (Item curr_ripped_item : ripped_item_list)
-            {
+            for (Item curr_ripped_item : ripped_item_list) {
                 ripped_connections.addAll(curr_ripped_item.get_connection_items(Item.StopConnectionOption.VIA));
             }
             hdlg.get_routing_board().remove_items(ripped_connections, false);
@@ -253,14 +208,8 @@ public class ExpandTestState extends InteractiveState
     /**
      * Returns true, if the completion succeeded.
      */
-    private boolean complete_expansion_room(IncompleteFreeSpaceExpansionRoom p_incomplete_room)
-    {
+    private boolean complete_expansion_room(IncompleteFreeSpaceExpansionRoom p_incomplete_room) {
         Collection<CompleteFreeSpaceExpansionRoom> completed_rooms = autoroute_engine.complete_expansion_room(p_incomplete_room);
         return (completed_rooms.size() > 0);
     }
-    private boolean in_autoroute = false;
-    private MazeSearchAlgo maze_search_algo = null;
-    private LocateFoundConnectionAlgo autoroute_result = null;
-    private AutorouteControl control_settings;
-    private AutorouteEngine autoroute_engine;
 }

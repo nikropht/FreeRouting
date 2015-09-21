@@ -25,30 +25,29 @@ import net.freerouting.geometry.planar.FloatPoint;
 /**
  * Class implementing the different functionality in the drag menu
  *
- * @author  alfons
+ * @author alfons
  */
-public class DragMenuState extends MenuState
-{
-    /** Returns a new instance of DragMenuState */
-    public static DragMenuState get_instance(BoardHandling p_board_handling, Logfile p_logfile)
-    {
+public class DragMenuState extends MenuState {
+    /**
+     * Creates a new instance of DragMenuState
+     */
+    public DragMenuState(BoardHandling p_board_handling, Logfile p_logfile) {
+        super(p_board_handling, p_logfile);
+    }
+
+    /**
+     * Returns a new instance of DragMenuState
+     */
+    public static DragMenuState get_instance(BoardHandling p_board_handling, Logfile p_logfile) {
         DragMenuState new_state = new DragMenuState(p_board_handling, p_logfile);
         return new_state;
     }
-    
-    /** Creates a new instance of DragMenuState */
-    public DragMenuState(BoardHandling p_board_handling, Logfile p_logfile)
-    {
-        super(p_board_handling, p_logfile);
-    }
-    
-    public InteractiveState mouse_pressed(FloatPoint p_point)
-    {
+
+    public InteractiveState mouse_pressed(FloatPoint p_point) {
         return DragState.get_instance(p_point, this, hdlg, logfile);
     }
-    
-    public String get_help_id()
-    {
+
+    public String get_help_id() {
         return "MenuState_DragMenuState";
     }
 }

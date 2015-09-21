@@ -25,13 +25,12 @@ package net.freerouting.datastructures;
  *
  * @author Alfons Wirtz
  */
-public interface IdNoGenerator
-{
+public interface IdNoGenerator {
     /**
      * Create a new unique identification number.
      */
     int new_no();
-    
+
     /**
      * Return the maximum generated id number so far.
      */

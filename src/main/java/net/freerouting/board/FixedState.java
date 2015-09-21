@@ -25,7 +25,6 @@ package net.freerouting.board;
  *
  * @author alfons
  */
-public enum FixedState
-{
+public enum FixedState {
     UNFIXED, SHOVE_FIXED, USER_FIXED, SYSTEM_FIXED
 }

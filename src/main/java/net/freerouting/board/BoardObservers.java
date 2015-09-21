@@ -24,11 +24,9 @@ package net.freerouting.board;
 import net.freerouting.datastructures.Observers;
 
 /**
- *
  * @author alfons
  */
-public interface BoardObservers extends Observers<Item>
-{
+public interface BoardObservers extends Observers<Item> {
     /**
      * Enable the observers to syncronize the moved component.
      */

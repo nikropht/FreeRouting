@@ -27,81 +27,63 @@ import javax.help.HelpSetException;
 import java.net.URL;
 
 /**
- *
  * @author Alfons Wirtz
  */
-public class BoardMenuHelp extends BoardMenuHelpReduced
-{
+public class BoardMenuHelp extends BoardMenuHelpReduced {
+    private static CSH.DisplayHelpFromSource contents_help = null;
+    private static CSH.DisplayHelpAfterTracking direct_help = null;
+
     /**
      * Creates a new instance of BoardMenuHelp
      * Separated from BoardMenuHelpReduced to avoid ClassNotFound exception when the library
      * jh.jar is not found, which is only used in this extended class.
      */
-    public BoardMenuHelp(BoardFrame p_board_frame)
-    {
+    public BoardMenuHelp(BoardFrame p_board_frame) {
         super(p_board_frame);
         this.initialize_help(p_board_frame.get_locale());
         javax.swing.JMenuItem direct_help_window = new javax.swing.JMenuItem();
         direct_help_window.setText(this.resources.getString("direct_help"));
-        if (direct_help != null)
-        {
+        if (direct_help != null) {
             direct_help_window.addActionListener(direct_help);
         }
         this.add(direct_help_window, 0);
         javax.swing.JMenuItem contents_window = new javax.swing.JMenuItem();
         contents_window.setText(this.resources.getString("contents"));
-        if (contents_help != null)
-        {
+        if (contents_help != null) {
             contents_window.addActionListener(contents_help);
         }
         this.add(contents_window, 0);
     }
-    
-    private void initialize_help(java.util.Locale p_locale)
-    {
+
+    private void initialize_help(java.util.Locale p_locale) {
         // try to find the helpset and create a HelpBroker object
-        if (BoardFrame.help_broker == null)
-        {
+        if (BoardFrame.help_broker == null) {
             String language = p_locale.getLanguage();
             String helpset_name;
-            if (language.equalsIgnoreCase("de"))
-            {
+            if (language.equalsIgnoreCase("de")) {
                 helpset_name = "net/freerouting/helpset/de/Help.hs";
-            }
-            else
-            {
+            } else {
                 helpset_name = "net/freerouting/helpset/en/Help.hs";
             }
-            try
-            {
+            try {
                 URL hsURL = HelpSet.findHelpSet(this.getClass().getClassLoader(), helpset_name);
-                if (hsURL == null)
-                {
+                if (hsURL == null) {
                     System.out.println("HelpSet " + helpset_name + " not found.");
-                }
-                else
-                {
+                } else {
                     BoardFrame.help_set = new HelpSet(null, hsURL);
                 }
-            }
-            catch (HelpSetException ee)
-            {
+            } catch (HelpSetException ee) {
                 System.out.println("HelpSet " + helpset_name + " could not be opened.");
                 System.out.println(ee.getMessage());
             }
-            if (BoardFrame.help_set != null)
-            {
+            if (BoardFrame.help_set != null) {
                 BoardFrame.help_broker = BoardFrame.help_set.createHelpBroker();
             }
-            if (BoardFrame.help_broker != null)
-            {
+            if (BoardFrame.help_broker != null) {
                 // CSH.DisplayHelpFromSource is a convenience class to display the helpset
                 contents_help = new CSH.DisplayHelpFromSource(BoardFrame.help_broker);
                 direct_help = new CSH.DisplayHelpAfterTracking(BoardFrame.help_broker);
             }
         }
     }
-    
-    private static CSH.DisplayHelpFromSource contents_help = null;
-    private static CSH.DisplayHelpAfterTracking direct_help = null;
 }

@@ -25,7 +25,6 @@ repositories {
 dependencies {
     compile 'com.sun.woodstock.dependlibs:jh:2.0'
 	compile 'javax.help:javahelp:2.0.05'
-	compile 'org.jvnet.hudson:netx:0.5-hudson-2'
 
 
     // Declare the dependency for your favourite test framework you want to use in your tests.

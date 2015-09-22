@@ -398,7 +398,7 @@ public class AutorouteEngine {
             return result;
         } catch (Exception e) {
             System.out.print("AutorouteEngine.complete_expansion_room: ");
-            System.out.println(e);
+            e.printStackTrace();
             return new LinkedList<CompleteFreeSpaceExpansionRoom>();
         }
 

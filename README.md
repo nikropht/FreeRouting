@@ -62,9 +62,9 @@ Here are some instructions how to run the Freerouting project in the NetBeans ID
 
 4) Add your downloaded Freerouting source code with Add Source Package.
 
-5) Build your new project in NetBeans. 
+5) Build your new project in NetBeans.
 
-6) To get rid of the undefined's download and unzip the attached library jh.jar. It is the system library of the Java Help system. 
+6) To get rid of the undefined's download and unzip the attached library jh.jar. It is the system library of the Java Help system.
 
 7) Right click on the name of your new project on the left of NetBeans and select Properties.
 
@@ -76,3 +76,27 @@ Here are some instructions how to run the Freerouting project in the NetBeans ID
 
 For optional parameters of the Freerouting outfile check the usage of the variable p_args in the source file gui/MainApplication.java.
 
+How to run the Freerouting project as a standalone application
+===========================================================================================
+Using maven
+
+```shell
+$ mvn package
+
+$ java -jar target/freerouting-1.0-SNAPSHOT-jar-with-dependencies.jar
+```
+
+Using gradle
+
+```shell
+$ gradle build
+
+$ java -jar build/libs/FreeRouting.jar
+```
+List of options:
+
+* -de — open design file
+* -di — open directory
+* -l de — set locale to German. Other values are currently ignored
+* -s — Disable "Save/Save As/Generate Logfile/Replay Logfile" menu items from "File" menu.
+* -test — Enable test version. Debug messages, no confirm on exit

@@ -1,0 +1,7 @@
+/target
+.idea
+/.gradle
+/build
+*.iml
+*.swp
+

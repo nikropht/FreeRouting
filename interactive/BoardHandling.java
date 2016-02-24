@@ -50,6 +50,7 @@ import board.Unit;
 import board.TestLevel;
 
 import designformats.specctra.DsnFile;
+import java.awt.geom.Rectangle2D;
 
 /**
  *
@@ -673,15 +674,15 @@ public class BoardHandling
     /**
      * Repaints a rectangle of board panel on the screen.
      */
-    public void repaint(Rectangle p_rect)
+    public void repaint(Rectangle2D p_rect)
     {
         if (this.paint_immediately)
         {
-            panel.paintImmediately(p_rect);
+            panel.paintImmediately(p_rect.getBounds());
         }
         else
         {
-            panel.repaint(p_rect);
+            panel.repaint(p_rect.getBounds());
         }
     }
 
@@ -1661,13 +1662,13 @@ public class BoardHandling
      * Gets a surrounding rectangle of the area, where an update of the
      * graphics is needed caused by the previous interactive actions.
      */
-    Rectangle get_graphics_update_rectangle()
+    Rectangle2D get_graphics_update_rectangle()
     {
-        Rectangle result;
+        Rectangle2D result;
         IntBox update_box = board.get_graphics_update_box();
         if (update_box == null || update_box.is_empty())
         {
-            result = new Rectangle(0, 0, 0, 0);
+            result = new Rectangle2D.Double(0, 0, 0, 0);
         }
         else
         {

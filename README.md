@@ -1,3 +1,15 @@
+Slightly Improved Version
+=========================
+
+Based on blog post:
+http://www.muonhunter.com/blog/installing-freerouting-on-kicad
+
+This build requires both 
+* javaws.jar
+* jh.jar
+
+Fixes for modern Java Rectangle -> Rectangle2D usage.
+
 FreeRouting
 ===========
 

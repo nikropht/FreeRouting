@@ -22,6 +22,7 @@ import geometry.planar.Limits;
 
 import java.awt.Dimension;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 
 /**
  * Transformation function between the board and the screen coordinate systems.
@@ -60,7 +61,8 @@ public class CoordinateTransform implements java.io.Serializable
         display_y_offset = scale_factor * design_box_with_offset.ll.y ;
     }
     
-    /** Copy constructor */
+    /** Copy constructor
+     * @param p_coordinate_transform */
     public CoordinateTransform(CoordinateTransform p_coordinate_transform)
     {
         this.screen_bounds = new Dimension(p_coordinate_transform.screen_bounds);
@@ -175,7 +177,7 @@ public class CoordinateTransform implements java.io.Serializable
      * If the internal rotation is not a multiple of Pi/2, a bounding rectangle of the
      * rotated rectangular shape is returned.
      */
-    public java.awt.Rectangle board_to_screen(IntBox p_box)
+    public Rectangle2D board_to_screen(IntBox p_box)
     {
         Point2D corner_1 = board_to_screen(p_box.ll.to_float());
         Point2D corner_2 = board_to_screen(p_box.ur.to_float());
@@ -183,9 +185,9 @@ public class CoordinateTransform implements java.io.Serializable
         double ll_y = Math.min(corner_1.getY(), corner_2.getY());
         double dx = Math.abs(corner_2.getX() - corner_1.getX());
         double dy = Math.abs(corner_2.getY() - corner_1.getY());
-        java.awt.Rectangle result =
-                new java.awt. Rectangle((int) Math.floor(ll_x), (int) Math.floor(ll_y),
-                (int) Math.ceil(dx), (int) Math.ceil(dy));
+        Rectangle2D result =
+                new Rectangle2D.Double(Math.floor(ll_x), Math.floor(ll_y),
+                Math.ceil(dx), Math.ceil(dy));
         return result;
     }
     
@@ -194,7 +196,7 @@ public class CoordinateTransform implements java.io.Serializable
      * If the internal rotation is not a multiple of Pi/2, a bounding box of the
      * rotated rectangular shape is returned.
      */
-    public IntBox screen_to_board(java.awt.Rectangle p_rect)
+    public IntBox screen_to_board(Rectangle2D p_rect)
     {
         FloatPoint corner_1 = screen_to_board(new Point2D.Double(p_rect.getX(), p_rect.getY()));
         FloatPoint corner_2 = screen_to_board(new Point2D.Double(p_rect.getX() + p_rect.getWidth(),
@@ -296,4 +298,5 @@ public class CoordinateTransform implements java.io.Serializable
     private double rotation = 0;
     
     private FloatPoint rotation_pole;
+
 }

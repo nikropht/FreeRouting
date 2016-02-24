@@ -27,6 +27,7 @@ import board.TestLevel;
 import board.BoardObservers;
 
 import designformats.specctra.DsnFile;
+import java.awt.Rectangle;
 
 /**
  *
@@ -422,8 +423,8 @@ public class BoardFrame extends javax.swing.JFrame
     public void zoom_all()
     {
         board_panel.board_handling.adjust_design_bounds();
-        java.awt.Rectangle display_rect = board_panel.get_viewport_bounds();
-        java.awt.Rectangle design_bounds = board_panel.board_handling.graphics_context.get_design_bounds();
+        Rectangle display_rect = board_panel.get_viewport_bounds().getBounds();
+        Rectangle design_bounds = board_panel.board_handling.graphics_context.get_design_bounds().getBounds();
         double width_factor = display_rect.getWidth() /design_bounds.getWidth();
         double height_factor = display_rect.getHeight() /design_bounds.getHeight();
         double zoom_factor =  Math.min(width_factor, height_factor);

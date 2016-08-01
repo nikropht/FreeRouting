@@ -1,0 +1,40 @@
+*.class
+*.html
+*.pdf
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+# IDEA #
+*.iml
+.idea
+*~
+
+# eclipse specific git ignore
+.project
+.metadata
+.classpath
+.settings/
+
+# Maven files #
+data/
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.next
+release.properties
+
+# Misc #
+*.log
+*.bat
+
+# JRebel config files #
+rebel.xml

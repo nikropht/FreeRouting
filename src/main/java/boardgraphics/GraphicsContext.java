@@ -127,7 +127,7 @@ public class GraphicsContext implements java.io.Serializable
             return;
         }
         Graphics2D g2 = (Graphics2D)p_g;
-        Rectangle clip_shape = (Rectangle)p_g.getClip() ;
+        Rectangle clip_shape = (Rectangle)p_g.getClip().getBounds() ;
         // the class member update_box cannot be used here, because
         // the dirty rectangle is internally enlarged by the system.
         // Therefore we can not improve the performance by using an
@@ -270,7 +270,7 @@ public class GraphicsContext implements java.io.Serializable
         }
         Point2D center = coordinate_transform.board_to_screen(p_circle.center.to_float());
         double radius = coordinate_transform.board_to_screen(p_circle.radius);
-        if (!point_near_rectangle(center.getX(), center.getY(), (Rectangle)p_g.getClip(), radius))
+        if (!point_near_rectangle(center.getX(), center.getY(), (Rectangle)p_g.getClip().getBounds(), radius))
         {
             return;
         }
@@ -310,7 +310,7 @@ public class GraphicsContext implements java.io.Serializable
         {
             Point2D center = coordinate_transform.board_to_screen(curr_ellipse.center);
             double bigger_radius = coordinate_transform.board_to_screen(curr_ellipse.bigger_radius);
-            if (!point_near_rectangle(center.getX(), center.getY(), (Rectangle)p_g.getClip(), bigger_radius))
+            if (!point_near_rectangle(center.getX(), center.getY(), (Rectangle)p_g.getClip().getBounds(), bigger_radius))
             {
                 continue;
             }
@@ -429,7 +429,7 @@ public class GraphicsContext implements java.io.Serializable
                 System.out.println("GraphicsContext.fill_area: shape not bounded");
                 return;
             }
-            Rectangle clip_shape = (Rectangle)p_g.getClip() ;
+            Rectangle clip_shape = (Rectangle)p_g.getClip().getBounds() ;
             IntBox clip_box = coordinate_transform.screen_to_board(clip_shape);
             if (!border.bounding_box().intersects(clip_box))
             {
